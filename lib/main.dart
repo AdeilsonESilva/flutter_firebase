@@ -47,10 +47,25 @@ class App extends StatelessWidget {
       // });
 
       // Recuperar todos os documentos monitorando alterações
-      db.collection('noticias').snapshots().listen((snapshot) {
-        snapshot.documents.forEach((document) {
-          print('nome: ${document['nome']}, idade: ${document['idade']}');
-        });
+      // db.collection('noticias').snapshots().listen((snapshot) {
+      //   snapshot.documents.forEach((document) {
+      //     print('nome: ${document['nome']}, idade: ${document['idade']}');
+      //   });
+      // });
+
+      // Filtros
+      var querySnapshot = await db
+          .collection('users')
+          // .where('nome', isEqualTo: 'Adeilson')
+          .where('idade', isGreaterThan: 30)
+          .where('idade', isLessThan: 80)
+          .orderBy('idade', descending: true)
+          .orderBy('nome', descending: true)
+          // .limit(1)
+          .getDocuments();
+
+      querySnapshot.documents.forEach((document) {
+        print(document.data);
       });
     }
 
