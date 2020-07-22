@@ -84,10 +84,12 @@ class App extends StatelessWidget {
     void _executarAuth() async {
       FirebaseAuth auth = FirebaseAuth.instance;
 
-      // // Autenticação
-      // var email = 'adeilson3@gmail.com';
+      // Autenticação
+      var email = 'adeilson.teste@gmail.com';
       // var senha = '123456';
+      var senha = '1234567';
 
+      // Criar usuário
       // try {
       //   var result = await auth.createUserWithEmailAndPassword(
       //       email: email, password: senha);
@@ -97,8 +99,24 @@ class App extends StatelessWidget {
       //   print(e);
       // }
 
+      // Deslogar
+      await auth.signOut();
+
+      try {
+        var result = await auth.signInWithEmailAndPassword(
+            email: email, password: senha);
+        print(result.user.email);
+      } catch (e) {
+        print(e.code == 'ERROR_WRONG_PASSWORD');
+      }
+
+      // Validar usuário logado
       var usuarioAtual = await auth.currentUser();
-      print(usuarioAtual.email);
+      if (usuarioAtual != null) {
+        print('usuário logado');
+      } else {
+        print('usuário deslogado');
+      }
     }
 
     // _executarFirestore();
