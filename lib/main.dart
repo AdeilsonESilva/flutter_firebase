@@ -53,15 +53,26 @@ class App extends StatelessWidget {
       //   });
       // });
 
-      // Filtros
+      // // Filtros
+      // var querySnapshot = await db
+      //     .collection('users')
+      //     // .where('nome', isEqualTo: 'Adeilson')
+      //     .where('idade', isGreaterThan: 30)
+      //     .where('idade', isLessThan: 80)
+      //     // .orderBy('idade', descending: true)
+      //     .orderBy('nome', descending: true)
+      //     // .limit(1)
+      //     .getDocuments();
+
+      // querySnapshot.documents.forEach((document) {
+      //   print(document.data);
+      // });
+
+      // Filtros 2
       var querySnapshot = await db
           .collection('users')
-          // .where('nome', isEqualTo: 'Adeilson')
-          .where('idade', isGreaterThan: 30)
-          .where('idade', isLessThan: 80)
-          .orderBy('idade', descending: true)
-          .orderBy('nome', descending: true)
-          // .limit(1)
+          .where('nome', isGreaterThanOrEqualTo: 'Ad')
+          .where('nome', isLessThanOrEqualTo: 'Ad' + '\uf8ff')
           .getDocuments();
 
       querySnapshot.documents.forEach((document) {
