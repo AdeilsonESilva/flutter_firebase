@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() {
   runApp(App());
@@ -8,7 +9,7 @@ void main() {
 class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Future<void> _executar() async {
+    Future<void> _executarFirestore() async {
       var db = Firestore.instance;
 
       // Criar ou atualizar um documento especifico
@@ -80,7 +81,28 @@ class App extends StatelessWidget {
       });
     }
 
-    _executar();
+    void _executarAuth() async {
+      FirebaseAuth auth = FirebaseAuth.instance;
+
+      // // Autenticação
+      // var email = 'adeilson3@gmail.com';
+      // var senha = '123456';
+
+      // try {
+      //   var result = await auth.createUserWithEmailAndPassword(
+      //       email: email, password: senha);
+
+      //   print(result.user.email);
+      // } catch (e) {
+      //   print(e);
+      // }
+
+      var usuarioAtual = await auth.currentUser();
+      print(usuarioAtual.email);
+    }
+
+    // _executarFirestore();
+    _executarAuth();
 
     return Container();
   }
