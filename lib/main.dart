@@ -1,10 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
 
-void main() {
-  runApp(App());
-}
+void main() => runApp(MaterialApp(
+      home: Home(),
+    ));
 
 class App extends StatelessWidget {
   @override
@@ -120,8 +123,63 @@ class App extends StatelessWidget {
     }
 
     // _executarFirestore();
-    _executarAuth();
+    // _executarAuth();
 
     return Container();
+  }
+}
+
+class Home extends StatefulWidget {
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  File _image;
+  final picker = ImagePicker();
+
+  Future<void> _recuperarImagem(bool daCamera) async {
+    PickedFile pickedFile;
+
+    if (daCamera) {
+      pickedFile = await picker.getImage(source: ImageSource.camera);
+    } else {
+      pickedFile = await picker.getImage(source: ImageSource.gallery);
+    }
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+      print(_image);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Selecionar imagem'),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            RaisedButton(
+              child: Text('Camera'),
+              onPressed: () {
+                _recuperarImagem(true);
+              },
+            ),
+            RaisedButton(
+              child: Text('Galeria'),
+              onPressed: () {
+                _recuperarImagem(false);
+              },
+            ),
+            _image == null ? Container() : Image.file(_image),
+          ],
+        ),
+      ),
+    );
   }
 }
