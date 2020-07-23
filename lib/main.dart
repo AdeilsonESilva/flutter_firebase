@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -137,6 +138,8 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   File _image;
   final picker = ImagePicker();
+  var _statusUpload = 'Upload não iniciado';
+  String _urlImageDownload;
 
   Future<void> _recuperarImagem(bool daCamera) async {
     PickedFile pickedFile;
@@ -155,6 +158,47 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Future<void> _uploadImagem() async {
+    if (_image == null) {
+      return;
+    }
+
+    FirebaseStorage storage = FirebaseStorage.instance;
+    StorageReference pastaRaiz = storage.ref();
+    StorageReference arquivo = pastaRaiz.child('fotos').child('foto1.jpg');
+
+    var task = arquivo.putFile(_image);
+    task.events.listen((event) {
+      switch (event.type) {
+        case StorageTaskEventType.progress:
+          setState(() {
+            _statusUpload = 'Em progresso';
+          });
+          break;
+        case StorageTaskEventType.success:
+          setState(() {
+            _statusUpload = 'Upload realizado com sucesso';
+          });
+          break;
+        case StorageTaskEventType.failure:
+          setState(() {
+            _statusUpload = 'Erro ao efetuar o upload';
+          });
+          break;
+        default:
+          break;
+      }
+    });
+
+    task.onComplete.then((snapshot) async {
+      String url = await snapshot.ref.getDownloadURL();
+
+      setState(() {
+        _urlImageDownload = url;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -164,6 +208,7 @@ class _HomeState extends State<Home> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            Text(_statusUpload),
             RaisedButton(
               child: Text('Camera'),
               onPressed: () {
@@ -177,6 +222,15 @@ class _HomeState extends State<Home> {
               },
             ),
             _image == null ? Container() : Image.file(_image),
+            RaisedButton(
+              child: Text('Upload Storage'),
+              onPressed: () {
+                _uploadImagem();
+              },
+            ),
+            _urlImageDownload == null
+                ? Container()
+                : Image.network(_urlImageDownload),
           ],
         ),
       ),
